@@ -41,8 +41,10 @@ def clear_directory(directory):
                 # 디렉토리면 디렉토리 삭제
                 elif os.path.isdir(file_path):
                     shutil.rmtree(file_path)
+                
             except Exception as e:
                 print(f'Failed to delete {file_path}. Reason: {e}')
+        return "캐시 삭제되었습니다."
 
 def get_select_gallery(evt: gr.SelectData):
 
@@ -65,19 +67,15 @@ def get_select_gallery(evt: gr.SelectData):
 
 
 def move_copy_files(state_select_image, destination_path):
-    # state_select_image에서 이미지와 JSON 파일 경로를 가져옴
     image_path, json_path = state_select_image
     today = datetime.now().strftime("%Y-%m-%d")
 
-    # 복사할 파일 경로 설정
     image_dest_path = os.path.join(destination_path, today, os.path.basename(image_path))
     json_dest_path = os.path.join(destination_path, today, os.path.basename(json_path))
 
-    # 디렉토리가 없는 경우 생성
     if not os.path.exists(os.path.dirname(image_dest_path)):
         os.makedirs(os.path.dirname(image_dest_path))
 
-    # 파일 복사
     shutil.copy2(image_path, image_dest_path)
     shutil.copy2(json_path, json_dest_path)
 
@@ -85,19 +83,35 @@ def move_copy_files(state_select_image, destination_path):
 
 
 def move_copy_files_only_img(state_select_image, destination_path):
-    # state_select_image에서 이미지와 JSON 파일 경로를 가져옴
     image_path = state_select_image
     today = datetime.now().strftime("%Y-%m-%d")
 
-    # 복사할 파일 경로 설정
     image_dest_path = os.path.join(destination_path, today, os.path.basename(image_path))
 
-    # 디렉토리가 없는 경우 생성
     if not os.path.exists(os.path.dirname(image_dest_path)):
         os.makedirs(os.path.dirname(image_dest_path))
 
-    # 파일 복사
     shutil.copy2(image_path, image_dest_path)
 
     return f"이동 완료되었습니다. {image_path},{destination_path}"
 
+
+def move_copy_files_all_img(image_paths, destination_path):
+    today = datetime.now().strftime("%Y-%m-%d")
+    print("결과 이미지 경로 모음: ", image_paths)
+    for image_path in image_paths:
+        image_dest_path = os.path.join(destination_path, today, os.path.basename(image_path))
+
+        # JSON 파일의 경로 설정 (이미지 파일과 동일한 이름)
+        json_path = os.path.splitext(image_path)[0] + ".json"
+        json_dest_path = os.path.join(destination_path, today, os.path.basename(json_path))
+        
+        # 목적지 경로에 해당 폴더가 없으면 생성
+        os.makedirs(os.path.dirname(image_dest_path), exist_ok=True)
+        
+        # 이미지 파일 복사
+        shutil.copy2(image_path, image_dest_path)
+        shutil.copy2(json_path, json_dest_path)
+
+
+    return f"이동 완료되었습니다. {image_path},{destination_path}"
