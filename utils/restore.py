@@ -6,6 +6,8 @@ import torch
 import os
 import uuid
 from datetime import datetime
+import gc
+
 
 def inference(img, version='v1.3', scale=2):
     model = SRVGGNetCompact(num_in_ch=3, num_out_ch=3, num_feat=64, num_conv=32, upscale=4, act_type='prelu')
@@ -14,7 +16,7 @@ def inference(img, version='v1.3', scale=2):
     upsampler = RealESRGANer(scale=4, model_path=model_path, model=model, tile=0, tile_pad=10, pre_pad=0, half=half)
 
     # weight /= 100
-    print(img, version, scale)
+    print("GFPGAN 파라미터 : ",img, version, scale)
     if scale > 4:
         scale = 4  # avoid too large scale value
     try:
@@ -67,12 +69,19 @@ def inference(img, version='v1.3', scale=2):
             extension = 'jpg'
         today_date = datetime.now().strftime("%Y-%m-%d")
         unique = str(uuid.uuid4())
-        os.makedirs('result/facerestor/', exist_ok=True)
-        save_path = f'result/facerestor/{unique}.{extension}'
-
+        os.makedirs(f'result/facerestor/{today_date}/', exist_ok=True)
+        save_path = f'result/facerestor/{today_date}/{unique}.{extension}'
+        print("gfpgan 저장 경로 : ",save_path)
         cv2.imwrite(save_path, output)
 
         output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
+        
+        del upsampler
+        del face_enhancer
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+
         return output, save_path
     except Exception as error:
         print('global exception', error)

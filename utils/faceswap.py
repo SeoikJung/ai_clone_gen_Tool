@@ -27,7 +27,7 @@ def copy_images_to_directory():
             print(f'Copied {source_path} to {destination_path}')
 
 
-def roopGAN(source_images, base_image):
+def roopGAN(source_images, base_image , gfp_scale, gfp_version):
     print("소스이미지 출력 : ", source_images)
     ### 시작할때 폴더 청소
     today_date = datetime.now().strftime("%Y-%m-%d")
@@ -68,16 +68,16 @@ def roopGAN(source_images, base_image):
         print(result.stdout)
     except subprocess.CalledProcessError as e:
         print("Error:", e.stderr)
-
+    
 
     images , paths = img_list(directory)
     imgs = []
     pths = []
     for img in paths:
-        img, pth = inference(img)
+        img, pth = inference(img, version=gfp_version, scale=gfp_scale)
         imgs.append(img)
         pths.append(pth)
-    zips = zip_images(pths, output_dir="result/zip")
+    zips = zip_images(pths, output_dir=f"result/zip")
     pths_zip = pths.copy()
     pths_zip.append(zips)
     return pths, pths_zip

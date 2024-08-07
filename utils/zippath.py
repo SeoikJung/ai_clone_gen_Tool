@@ -19,7 +19,7 @@ def zip_images(file_paths, output_dir="result/zip"):
     today = datetime.now().strftime("%Y-%m-%d")
     zip_file_name = f"{today}_images.zip"
     zip_file_path = os.path.join(output_dir, zip_file_name)
-
+    print("압축하기 위한 파일 인풋값:", file_paths)
     # 파일들을 zip으로 압축
     with zipfile.ZipFile(zip_file_path, 'w') as zipf:
         for file_path in file_paths:
