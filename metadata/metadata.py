@@ -64,6 +64,10 @@ def load_and_translate_metadata_var(evt: gr.SelectData):
             result_string = ', '.join(translated_values)
             values = translated_values
             print(translated_values)
+            
+            cfg = metadata["cfg"]
+            steps = metadata["steps"]
+            
             return (
         gr.update(),  # races 값을 변경하지 않음
         gr.update(value=values[1]),  # ages
@@ -76,9 +80,14 @@ def load_and_translate_metadata_var(evt: gr.SelectData):
         gr.update(value=values[8]),  # camera
         gr.update(value=values[9]),  # display
         gr.update(value=values[10]), # light
-        gr.update(value=values[11])  # adj
+        gr.update(value=values[11]),  # adj
+        gr.update(value=steps),  # steps
+        gr.update(value=cfg)  # cfg
+
     )
             return result_string
+        
+        
     except FileNotFoundError:
         print(f"Error: {new_json_path} not found")
         return None
